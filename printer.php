@@ -6,7 +6,7 @@
     </head>
     <body>
         <?php
-        //echo "<pre>".print_r($GLOBALS, true)."</pre>";
+        echo "<pre>".print_r($GLOBALS, true)."</pre>";
         ?>
     </body>
 </html>

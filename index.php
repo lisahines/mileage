@@ -1,7 +1,10 @@
 <?php
   include( "./config.php" );
   
-   //checking for valid data?
+   //checking for valid data? Not sure what's happening here.  I think that 
+	//it is setting a checker array for each of the elements below.
+	//the regex element is set for each and the error element is set for each, 
+	//presumably to be called up later.
    $checker = array(
     'odometer'=>array(
       0=>array('regex'=>'/(^\d+\.?\d*$)|(^\.\d+$)/','error'=>'Odometer must be a number')
@@ -23,7 +26,7 @@
   if(!$db_selected){
     die("Could not select Database");
   }
-  //insert new entries
+  //insert new entries - can you explain POST?
   if(isset ($_POST['form_submit'])){
     //get form values
     $default_odometer = $_POST['odometer'];
@@ -48,6 +51,7 @@
       $q = "INSERT INTO fills (id, date_time, odometer, volume, price) VALUES "
         ."(0, NOW(), ".$_POST['odometer'].", ".$_POST['volume'].", ".$_POST['price'].")";
       $result = mysqli_query($db, $q);
+	//assuming this returns an empty string which will be false here
       if($result){
         echo "<p>Successful Update</p>";
       }else{
@@ -56,16 +60,18 @@
     }
   }
   //load the historical data
-  $q = "SELECT * FROM fills ORDER BY date_time DESC";
+  $q = "SELECT * FROM fills WHERE car_id = " . $_GET['car'] . " ORDER BY date_time DESC";
   $result = mysqli_query($db, $q);
   if ($result){
     $history=array();
     $i = 0;
+	//what is happening here?
     while($row_array = mysqli_fetch_array($result, MYSQLI_ASSOC)){
       $i++;
       $history[$row_array["id"]] = $row_array;
     }
   }
+	//or here?
   foreach ($history as $key => $entry){
     if(isset($prev_key)){
       $distance = $old_odometer-$entry['odometer'];
@@ -94,6 +100,7 @@
   }
   $current_stats = reset($history);
 ?>
+<!-- writes html -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
     <head>
@@ -104,6 +111,7 @@
 <?php
   echo "<h1>Mileage</h1>\r\n";
   echo "<p>"
+	//what is happening here?
     .sprintf("%0.2f",$current_stats['metric'])." L/100km<br/>"
     .sprintf("%0.2f",$current_stats['imperial'])." mpg<br/>"
     .sprintf("%0.3f",$current_stats['unit_cost'])." \$/km<br/>"
